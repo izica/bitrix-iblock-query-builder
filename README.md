@@ -1,1 +1,4 @@
-# bitrix-query-builder
+## Install
+```
+composer require izica/bitrix-query-builder
+```

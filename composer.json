@@ -1,0 +1,22 @@
+{
+    "name": "izica/bitrix-query-builder",
+    "description": "Query Builder for CMS Bitrix",
+    "authors": [
+        {
+            "name": "Golovarchuk Artyom",
+            "email": "artemiztomska@gmail.com"
+        }
+    ],
+    "keywords": ["bitrix", "php", "query", "orm", "builder", "query-builder", "bitrix-query"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.6.0"
+    },
+    "autoload": {
+        "classmap": [
+            "BitrixQueryBuilder.php",
+            "BitrixQueryBuilderElement.php",
+            "BitrixQueryBuilderSection.php"
+        ]
+    }
+}

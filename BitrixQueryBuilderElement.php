@@ -43,8 +43,12 @@ class BitrixQueryBuilderElement {
         return $this;
     }
 
-    public function filter($sFilterProperty, $sFilterValue) {
-        $this->arFilter[$sFilterProperty] = $sFilterValue;
+    public function filter($sFilterProperty, $sFilterValue = false) {
+        if($sFilterValue == false){
+            $this->arFilter = $sFilterValue;
+        }else{
+            $this->arFilter[$sFilterProperty] = $sFilterValue;
+        }
         return $this;
     }
 

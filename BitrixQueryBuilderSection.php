@@ -51,7 +51,6 @@ class BitrixQueryBuilderSection {
                 $this->arItems[$arItem['IBLOCK_SECTION_ID']] = $arItem;
             }
         }
-        pre($this->arItems);
         return $this;
     }
 
@@ -60,8 +59,12 @@ class BitrixQueryBuilderSection {
         return $this;
     }
 
-    public function filter($sFilterProperty, $sFilterValue) {
-        $this->arFilter[$sFilterProperty] = $sFilterValue;
+    public function filter($sFilterProperty, $sFilterValue = false) {
+        if($sFilterValue == false){
+            $this->arFilter = $sFilterValue;
+        }else{
+            $this->arFilter[$sFilterProperty] = $sFilterValue;
+        }
         return $this;
     }
 

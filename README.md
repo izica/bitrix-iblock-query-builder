@@ -70,13 +70,14 @@ $arSections = BitrixQueryBuilder::sections('furniture_products')
 * BitrixQueryBuilderElement
     * order(value: array)
     * limit(value: integer)
-    * filter(key: string, value: string)
-    * filter(value: array)
+    * filter(key: string, value: string) - добавляет в фильтр новое значение
+    * filter(value: array) - устанавливает фильтр полностью
     * select(value: string | array, append: boolean)
     * execute()
 * BitrixQueryBuilderSection
     * order(value: array)
-    * filter(key: string, value: string | array)
+    * filter(key: string, value: string) - добавляет в фильтр новое значение
+    * filter(value: array) - устанавливает фильтр полностью
     * select(value: string | array, append: boolean)
     * buildTree() - выдает разделы в виде дерева, дочернии элементы доступны по индексу 'SECTIONS'
     * withItems(BitrixQueryBuilderElement = NULL) - добавляет в разделы элементы, совместима с buildTree

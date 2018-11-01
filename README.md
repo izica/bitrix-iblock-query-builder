@@ -1,4 +1,4 @@
-# Install
+# Установка
 ```
 composer require izica/bitrix-query-builder
 ```
@@ -38,11 +38,11 @@ $arSections = BitrixQueryBuilder::elements('furniture_products')
 
 ## Получение разделов с элементами
 ```php
-$arSections = BitrixQueryBuilder::elements('furniture_products')
+$arSections = BitrixQueryBuilder::sections('furniture_products')
     ->withItems()
     ->execute();
     
-$arSections = BitrixQueryBuilder::elements('furniture_products')
+$arSections = BitrixQueryBuilder::sections('furniture_products')
     ->withItems()
     ->buildTree()
     ->execute();
@@ -57,7 +57,7 @@ $obElements = BitrixQueryBuilder::elements('furniture_products')
     ])
     ->filter('ACTIVE', 'Y');
     
-$arSections = BitrixQueryBuilder::elements('furniture_products')
+$arSections = BitrixQueryBuilder::sections('furniture_products')
     ->withItems($obElements)
     ->buildTree()
     ->execute();
@@ -67,15 +67,17 @@ $arSections = BitrixQueryBuilder::elements('furniture_products')
 * BitrixQueryBuilder
     * elements(iblock_code: string)
     * sections(iblock_code: string)
-* BitrixQueryBuilderElements
+* BitrixQueryBuilderElement
     * order(value: array)
     * limit(value: integer)
-    * filter(key: string, value: string | array)
+    * filter(key: string, value: string)
+    * filter(value: array)
     * select(value: string | array, append: boolean)
     * execute()
-* BitrixQueryBuilderElements
+* BitrixQueryBuilderSection
     * order(value: array)
-    * limit(value: integer)
     * filter(key: string, value: string | array)
     * select(value: string | array, append: boolean)
+    * buildTree() - выдает разделы в виде дерева, дочернии элементы доступны по индексу 'SECTIONS'
+    * withItems(BitrixQueryBuilderElement = NULL) - добавляет в разделы элементы, совместима с buildTree
     * execute()

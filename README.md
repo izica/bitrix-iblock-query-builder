@@ -1,84 +1,65 @@
-# Установка
+## Установка
+Установить через composer(или скачать), подключить в php_interface/init.php
 ```
 composer require izica/bitrix-query-builder
 ```
 
-# Использование
+## Использование
 
-## Получение элементов
+##### Получение элементов инфоблока
 ```php
 $arItems = BitrixQueryBuilder::elements('furniture_products')
-    ->execute();
-```
-
-## Применение фильтров, получение свойств
-```php
-$arItems = BitrixQueryBuilder::elements('furniture_products')
-    ->select([
-        'NAME',
-        'PREVIEW_TEXT'
+    ->filter([
+        'ACTIVE' => 'Y',
+        'NAME' => '%table%'
     ])
-    ->withProperties()
-    ->filter('ACTIVE', 'Y')
+    ->select([
+         'NAME',
+         'PREVIEW_TEXT',
+    ])
+    ->properties([
+        'AUTHOR',
+        'COLOR'
+    ])
     ->execute();
 ```
-
-## Получение разделов
+##### Получение разделов инфоблока
 ```php
-$arSections = BitrixQueryBuilder::elements('furniture_products')
-    ->execute();
-```
-
-## Получение дерева разделов
-```php
-$arSections = BitrixQueryBuilder::elements('furniture_products')
-    ->buildTree()
-    ->execute();
-```
-
-## Получение разделов с элементами
-```php
-$arSections = BitrixQueryBuilder::sections('furniture_products')
-    ->withItems()
-    ->execute();
-    
 $arSections = BitrixQueryBuilder::sections('furniture_products')
     ->withItems()
     ->buildTree()
     ->execute();
 ```
 
-## Получение разделов с элементами, которые будут отфильтрованы
+## Документация
+* [BitrixQueryBuilder](#BitrixQueryBuilder)
+    * [elements(iblockCode: string)](#BitrixQueryBuilder.elements)
+    * [sections(iblockCode: string)](#BitrixQueryBuilder.sections)
+* [BitrixQueryBuilderElement](#BitrixQueryBuilderElement)
+    * [order(value: array)](#BitrixQueryBuilderElement.order)
+    * [limit(value: int)](#BitrixQueryBuilderElement.limit)
+    * [page(page: int, perpage: int)](#BitrixQueryBuilderElement.page)
+    * [filter(key: string, value: mixed)](#BitrixQueryBuilderElement.filter)
+    * [filter(value: array)](#BitrixQueryBuilderElement.filter)
+    * [select(value: mixed, append:bool)](#BitrixQueryBuilderElement.select)
+    * [execute()](#BitrixQueryBuilderElement.exectute)
+* [BitrixQueryBuilderSection](#BitrixQueryBuilderSection)
+    * [order(value: array)](#BitrixQueryBuilderSection)
+    * [limit(value: int)](#BitrixQueryBuilderSection.limit)
+    * [page(page: int, perpage: int)](#BitrixQueryBuilderSection.page)
+    * [filter(key: string, value: mixed)](#BitrixQueryBuilderSection.filter)
+    * [filter(value: array)](#BitrixQueryBuilderSection.filter)
+    * [select(value: mixed, append:bool)](#BitrixQueryBuilderSection.select)
+    * [buildTree()](#BitrixQueryBuilderSection.buildTree)
+    * [withItems(BitrixQueryBuilderElement = NULL)](#BitrixQueryBuilderSection.withItems)
+    * [execute()](#BitrixQueryBuilderSection.execute)
+
+
+### BitrixQueryBuilder
+##### BitrixQueryBuilder.order
 ```php
-$obElements = BitrixQueryBuilder::elements('furniture_products')
-    ->select([
-        'NAME',
-        'PREVIEW_TEXT'
-    ])
-    ->filter('ACTIVE', 'Y');
-    
-$arSections = BitrixQueryBuilder::sections('furniture_products')
-    ->withItems($obElements)
-    ->buildTree()
+$arItems = BitrixQueryBuilder::elements('furniture_products')
+    ->order(['SORT => 'ASC'])
     ->execute();
 ```
 
-# API
-* BitrixQueryBuilder
-    * elements(iblock_code: string)
-    * sections(iblock_code: string)
-* BitrixQueryBuilderElement
-    * order(value: array)
-    * limit(value: integer)
-    * filter(key: string, value: string) - добавляет в фильтр новое значение
-    * filter(value: array) - устанавливает фильтр полностью
-    * select(value: string | array, append: boolean)
-    * execute()
-* BitrixQueryBuilderSection
-    * order(value: array)
-    * filter(key: string, value: string) - добавляет в фильтр новое значение
-    * filter(value: array) - устанавливает фильтр полностью
-    * select(value: string | array, append: boolean)
-    * buildTree() - выдает разделы в виде дерева, дочернии элементы доступны по индексу 'SECTIONS'
-    * withItems(BitrixQueryBuilderElement = NULL) - добавляет в разделы элементы, совместима с buildTree
-    * execute()

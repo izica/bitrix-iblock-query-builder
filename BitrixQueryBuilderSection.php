@@ -1,22 +1,69 @@
 <?php
 
+/**
+ * Class BitrixQueryBuilderSection
+ */
 class BitrixQueryBuilderSection {
+    /**
+     * @var int
+     */
+    private $nIblockId = false;
+    /**
+     * @var string
+     */
     private $sIblockCode = '';
+    /**
+     * @var array
+     */
     private $arOrder = ['SORT' => 'ASC'];
+    /**
+     * @var array
+     */
     private $arFilter = [];
+    /**
+     * @var bool
+     */
     private $bIncCnt = false;
+    /**
+     * @var array
+     */
     private $arSelect = ['*'];
+    /**
+     * @var bool
+     */
     private $bBuildTree = false;
+    /**
+     * @var bool
+     */
     private $bWithItems = false;
+    /**
+     * @var array
+     */
     private $arItems = [];
+    /**
+     * @var array
+     */
+    private $arNavStartParams = [
+        'nPageSize' => 9999
+    ];
 
+    /**
+     * BitrixQueryBuilderSection constructor.
+     * @param string $sIblockCode
+     * @throws Exception
+     */
     function __construct($sIblockCode) {
         $this->sIblockCode = $sIblockCode;
         CModule::IncludeModule('iblock');
-        $this->arFilter['IBLOCK_ID'] = $this->getIblockIdByCode($sIblockCode);
+        $this->nIblockId = $this->getIblockIdByCode($sIblockCode);
         return $this;
     }
 
+    /**
+     * @param string $sIblockCode
+     * @return mixed
+     * @throws Exception
+     */
     private function getIblockIdByCode($sIblockCode) {
         $obResult = CIBlock::GetList([], ['SITE_ID' => 's1', "CODE" => $sIblockCode], true);
         if ($arResult = $obResult->Fetch()) {
@@ -26,22 +73,54 @@ class BitrixQueryBuilderSection {
         }
     }
 
+    /**
+     * @return $this
+     */
     public function buildTree() {
         $this->bBuildTree = true;
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function withCount() {
         $this->bIncCnt = true;
         return $this;
     }
 
+    /**
+     * @param int $nLimit
+     * @return $this
+     */
+    public function limit($nLimit) {
+        $this->arNavStartParams['nPageSize'] = $nLimit;
+        return $this;
+    }
+
+    /**
+     * @param $nPage
+     * @param int $nLimit
+     * @return $this
+     */
+    public function page($nPage, $nLimit = 20) {
+        $this->arNavStartParams['iNumPage'] = $nPage;
+        $this->arNavStartParams['nPageSize'] = $nLimit;
+        return $this;
+    }
+
+    /**
+     * @param BitrixQueryBuilderElement|NULL $obElementBuilder
+     * @return $this
+     * @throws Exception
+     */
     public function withItems(BitrixQueryBuilderElement $obElementBuilder = NULL) {
         if ($obElementBuilder === NULL) {
             $obElementBuilder = new BitrixQueryBuilderElement($this->sIblockCode);
+            $obElementBuilder->limit(9999);
         }
         $this->bWithItems = true;
-        if ($this->arFilter['IBLOCK_ID'] != $obElementBuilder->getIblockId()) {
+        if ($this->nIblockId != $obElementBuilder->getIblockId()) {
             global $APPLICATION;
             $APPLICATION->ThrowException("withItems: Iblocks codes doesn't match");
         }
@@ -54,11 +133,25 @@ class BitrixQueryBuilderSection {
         return $this;
     }
 
-    public function select($arValue) {
-        $this->arSelect = $arValue;
+    /**
+     * @param mixed $anyValue
+     * @param bool $bAppend
+     * @return $this
+     */
+    public function select($anyValue, $bAppend = false) {
+        if ($bAppend) {
+            $this->arSelect[] = $anyValue;
+        } else {
+            $this->arSelect = $anyValue;
+        }
         return $this;
     }
 
+    /**
+     * @param mixed $sFilterProperty
+     * @param bool $sFilterValue
+     * @return $this
+     */
     public function filter($sFilterProperty, $sFilterValue = false) {
         if($sFilterValue == false){
             $this->arFilter = $sFilterValue;
@@ -68,12 +161,21 @@ class BitrixQueryBuilderSection {
         return $this;
     }
 
+    /**
+     * @param array $arValue
+     * @return $this
+     */
     public function order($arValue) {
         $this->arOrder = $arValue;
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function execute() {
+        $this->arFilter['IBLOCK_ID'] = $this->nIblockId;
+
         if ($this->arSelect[0] != '*') {
             if ($this->bBuildTree) {
                 $this->arSelect[] = 'IBLOCK_SECTION_ID';
@@ -82,7 +184,7 @@ class BitrixQueryBuilderSection {
         }
 
         $arSections = [];
-        $resObject = CIBlockSection::GetList($this->arOrder, $this->arFilter, $this->bIncCnt, $this->arSelect);
+        $resObject = CIBlockSection::GetList($this->arOrder, $this->arFilter, $this->bIncCnt, $this->arSelect, $this->arNavStartParams);
         while ($arSection = $resObject->GetNext()) {
             if ($this->bBuildTree) {
                 $arSection['SECTIONS'] = [];
@@ -102,6 +204,10 @@ class BitrixQueryBuilderSection {
         return $arSections;
     }
 
+    /**
+     * @param $arSections
+     * @return array
+     */
     private function _buildTree($arSections) {
         $arRootSections = [];
         $arChildSections = [];
@@ -118,6 +224,10 @@ class BitrixQueryBuilderSection {
         return $arRootSections;
     }
 
+    /**
+     * @param $arRootSection
+     * @param $arChildSections
+     */
     private function _appendChildSections(&$arRootSection, $arChildSections) {
         if (isset($arChildSections[$arRootSection['ID']])) {
             $arRootSection['SECTIONS'] = $arChildSections[$arRootSection['ID']];

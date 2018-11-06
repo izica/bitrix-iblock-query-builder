@@ -94,7 +94,6 @@ $arItems = BitrixQueryBuilder::elements('furniture_products')
         'NAME',
         'PREVIEW_TEXT'
     ])
-    ->limit(20)
     ->execute();
 
 //или
@@ -102,7 +101,6 @@ $arItems = BitrixQueryBuilder::elements('furniture_products')
 $arItems = BitrixQueryBuilder::elements('furniture_products')
     ->select('NAME', true)
     ->select('PREVIEW_TEXT', true)
-    ->limit(20)
     ->execute();
 ```
 
@@ -114,7 +112,6 @@ $arItems = BitrixQueryBuilder::elements('furniture_products')
         'PREVIEW_TEXT',
         'PROPERTY_COLOR'
     ])
-    ->limit(20)
     ->execute();
 
 //или
@@ -127,7 +124,6 @@ $arItems = BitrixQueryBuilder::elements('furniture_products')
     ->properties([
         'COLOR'
     ])
-    ->limit(20)
     ->execute();
 ```
 
@@ -141,7 +137,6 @@ $arItems = BitrixQueryBuilder::elements('furniture_products')
         ["<PROPERTY_RADIUS" => 50, "=PROPERTY_CONDITION" => "Y"],
         [">=PROPERTY_RADIUS" => 50, "!=PROPERTY_CONDITION" => "Y"],
     ])
-    ->limit(20)
     ->execute();
 
 //или
@@ -157,6 +152,5 @@ $arItems = BitrixQueryBuilder::elements('furniture_products')
         ]
     ])
     ->select('PREVIEW_TEXT', true)
-    ->limit(20)
     ->execute();
 ```

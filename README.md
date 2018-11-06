@@ -6,7 +6,7 @@ composer require izica/bitrix-query-builder
 
 ## Использование
 
-##### Получение элементов инфоблока
+#### Получение элементов инфоблока
 ```php
 $arItems = BitrixQueryBuilder::elements('furniture_products')
     ->filter([
@@ -23,7 +23,7 @@ $arItems = BitrixQueryBuilder::elements('furniture_products')
     ])
     ->execute();
 ```
-##### Получение разделов инфоблока
+#### Получение разделов инфоблока
 ```php
 $arSections = BitrixQueryBuilder::sections('furniture_products')
     ->withItems()
@@ -33,33 +33,130 @@ $arSections = BitrixQueryBuilder::sections('furniture_products')
 
 ## Документация
 * [BitrixQueryBuilder](#BitrixQueryBuilder)
-    * [elements(iblockCode: string)](#BitrixQueryBuilder.elements)
-    * [sections(iblockCode: string)](#BitrixQueryBuilder.sections)
+    * [elements(iblockCode: string)](#BitrixQueryBuilderelements)
+    * [sections(iblockCode: string)](#BitrixQueryBuildersections)
 * [BitrixQueryBuilderElement](#BitrixQueryBuilderElement)
-    * [order(value: array)](#BitrixQueryBuilderElement.order)
-    * [limit(value: int)](#BitrixQueryBuilderElement.limit)
-    * [page(page: int, perpage: int)](#BitrixQueryBuilderElement.page)
-    * [filter(key: string, value: mixed)](#BitrixQueryBuilderElement.filter)
-    * [filter(value: array)](#BitrixQueryBuilderElement.filter)
-    * [select(value: mixed, append:bool)](#BitrixQueryBuilderElement.select)
-    * [execute()](#BitrixQueryBuilderElement.exectute)
+    * [order(value: array)](#BitrixQueryBuilderElementorder)
+    * [limit(value: int)](#BitrixQueryBuilderElementlimit)
+    * [page(page: int, perpage: int)](#BitrixQueryBuilderElementpage)
+    * [filter(key: string, value: mixed)](#BitrixQueryBuilderElementfilter)
+    * [filter(value: array)](#BitrixQueryBuilderElementfilter)
+    * [select(value: mixed, append:bool)](#BitrixQueryBuilderElementselect)
+    * [properties(value: array)](#BitrixQueryBuilderElementproperties)
+    * [execute()](#BitrixQueryBuilderElementexectute)
 * [BitrixQueryBuilderSection](#BitrixQueryBuilderSection)
     * [order(value: array)](#BitrixQueryBuilderSection)
-    * [limit(value: int)](#BitrixQueryBuilderSection.limit)
-    * [page(page: int, perpage: int)](#BitrixQueryBuilderSection.page)
-    * [filter(key: string, value: mixed)](#BitrixQueryBuilderSection.filter)
-    * [filter(value: array)](#BitrixQueryBuilderSection.filter)
-    * [select(value: mixed, append:bool)](#BitrixQueryBuilderSection.select)
-    * [buildTree()](#BitrixQueryBuilderSection.buildTree)
-    * [withItems(BitrixQueryBuilderElement = NULL)](#BitrixQueryBuilderSection.withItems)
-    * [execute()](#BitrixQueryBuilderSection.execute)
-
+    * [limit(value: int)](#BitrixQueryBuilderSectionlimit)
+    * [page(page: int, perpage: int)](#BitrixQueryBuilderSectionpage)
+    * [filter(key: string, value: mixed)](#BitrixQueryBuilderSectionfilter)
+    * [filter(value: array)](#BitrixQueryBuilderSectionfilter)
+    * [select(value: mixed, append:bool)](#BitrixQueryBuilderSectionselect)
+    * [buildTree()](#BitrixQueryBuilderSectionbuildTree)
+    * [withItems(BitrixQueryBuilderElement = NULL)](#BitrixQueryBuilderSectionwithItems)
+    * [execute()](#BitrixQueryBuilderSectionexecute)
 
 ### BitrixQueryBuilder
-##### BitrixQueryBuilder.order
+#### BitrixQueryBuilder.elements
+Возвращает объект [BitrixQueryBuilderElement](#BitrixQueryBuilderElement)
+```php
+BitrixQueryBuilder::elements('furniture_products')
+```
+#### BitrixQueryBuilder.sections
+Возвращает объект [BitrixQueryBuilderSection](#BitrixQueryBuilderSection)
+```php
+BitrixQueryBuilder::sections('furniture_products')
+```
+
+### BitrixQueryBuilderElement
+#### BitrixQueryBuilderElement.order
+#### BitrixQueryBuilderElement.limit
 ```php
 $arItems = BitrixQueryBuilder::elements('furniture_products')
     ->order(['SORT => 'ASC'])
+    ->limit(20)
+    ->execute();
+```
+#### BitrixQueryBuilderElement.page
+* page(pageNumber: int, limit: int)
+    * pageNumber - номер страницы
+    * limit - количество элементов на странице
+    
+```php
+$arItems = BitrixQueryBuilder::elements('furniture_products')
+    ->page(5, 10)
     ->execute();
 ```
 
+#### BitrixQueryBuilderElement.select
+```php
+$arItems = BitrixQueryBuilder::elements('furniture_products')
+    ->select([
+        'NAME',
+        'PREVIEW_TEXT'
+    ])
+    ->limit(20)
+    ->execute();
+
+//или
+
+$arItems = BitrixQueryBuilder::elements('furniture_products')
+    ->select('NAME', true)
+    ->select('PREVIEW_TEXT', true)
+    ->limit(20)
+    ->execute();
+```
+
+#### BitrixQueryBuilderElement.properties
+```php
+$arItems = BitrixQueryBuilder::elements('furniture_products')
+    ->select([
+        'NAME',
+        'PREVIEW_TEXT',
+        'PROPERTY_COLOR'
+    ])
+    ->limit(20)
+    ->execute();
+
+//или
+
+$arItems = BitrixQueryBuilder::elements('furniture_products')
+    ->select([
+        'NAME',
+        'PREVIEW_TEXT'
+    ])
+    ->properties([
+        'COLOR'
+    ])
+    ->limit(20)
+    ->execute();
+```
+
+#### BitrixQueryBuilderElement.filter
+```php
+$arItems = BitrixQueryBuilder::elements('furniture_products')
+    ->filter('ACTIVE', 'Y')
+    ->filter('NAME', '%A%')
+    ->filter('LOGIC', [
+        "LOGIC" => "OR",
+        ["<PROPERTY_RADIUS" => 50, "=PROPERTY_CONDITION" => "Y"],
+        [">=PROPERTY_RADIUS" => 50, "!=PROPERTY_CONDITION" => "Y"],
+    ])
+    ->limit(20)
+    ->execute();
+
+//или
+
+$arItems = BitrixQueryBuilder::elements('furniture_products')
+    ->filter([
+        'ACTIVE' => 'Y',
+        'NAME' => '%table%',
+        [
+            "LOGIC" => "OR",
+            ["<PROPERTY_RADIUS" => 50, "=PROPERTY_CONDITION" => "Y"],
+            [">=PROPERTY_RADIUS" => 50, "!=PROPERTY_CONDITION" => "Y"],
+        ]
+    ])
+    ->select('PREVIEW_TEXT', true)
+    ->limit(20)
+    ->execute();
+```

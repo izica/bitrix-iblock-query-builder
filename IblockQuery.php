@@ -1,0 +1,237 @@
+<?
+
+/**
+ * Class IblockQuery
+ */
+class IblockQuery
+{
+    /**
+     * @var bool
+     */
+    private $bCache = false;
+    /**
+     * @var string
+     */
+    private $sCacheModule = '';
+    /**
+     * @var int
+     */
+    private $nCacheTtl = 3600;
+    /**
+     * @var string
+     */
+    private $sCacheKey = '';
+    /**
+     * @var null
+     */
+    private $obCache = null;
+
+    private $bProperties = true;
+    /**
+     * @var string
+     */
+    private $sType = '';
+    /**
+     * @var bool
+     */
+    private $arFilter = false;
+    /**
+     * @var array
+     */
+    private $arSort = ['SORT' => 'ASC'];
+    /**
+     * @var array
+     */
+    private $arNav = [
+        "nPageSize" => 9999
+    ];
+    /**
+     * @var array
+     */
+    private $arSelect = ['*'];
+
+    /**
+     * IblockQuery constructor.
+     * @param string $type
+     */
+    public function __construct($type = 'items')
+    {
+        $this->sType = $type;
+    }
+
+    /**
+     * @return IblockQuery
+     */
+    public static function items()
+    {
+        return new IblockQuery('items');
+    }
+
+    /**
+     * @return IblockQuery
+     */
+    public static function sections()
+    {
+        return new IblockQuery('sections');
+    }
+
+    /**
+     * @return $this
+     */
+    public function properties($enabled = true)
+    {
+        $this->bProperties = $enabled;
+        return $this;
+    }
+
+    /**
+     * @param $sort
+     * @return $this
+     */
+    public function sort($sort)
+    {
+        $this->arSort = $sort;
+        return $this;
+    }
+
+    /**
+     * @param $filter
+     * @return $this
+     */
+    public function filter($filter)
+    {
+        $this->arFilter = $filter;
+        return $this;
+    }
+
+    /**
+     * @param $nav
+     * @return $this
+     */
+    public function nav($nav)
+    {
+        $this->arNav = $nav;
+        return $this;
+    }
+
+    /**
+     * @param string $module
+     * @param int $ttl
+     * @return $this
+     */
+    public function cache($module = 'iblock-query', $ttl = 3600)
+    {
+        $this->bCache = true;
+        $this->sCacheModule = $module;
+        $this->nCacheTtl = $ttl;
+
+        return $this;
+    }
+
+    /**
+     * @param $arSelect
+     * @return $this
+     */
+    public function select($arSelect)
+    {
+        $this->arSelect = $arSelect;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getCache()
+    {
+        $this->obCache = Bitrix\Main\Data\Cache::createInstance();
+        $this->sCacheKey = md5(serialize([
+            $this->arFilter,
+            $this->arNav,
+            $this->arSort,
+            $this->arSelect,
+        ]));
+
+        if ($this->obCache->initCache($this->nCacheTtl, $this->sCacheKey, $this->sCacheModule)) {
+            return json_decode($this->obCache->getVars(), true);
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array
+     */
+    private function getItems()
+    {
+        $arItems = [];
+
+        $dbResult = CIBlockElement::GetList($this->arSort, $this->arFilter, false, $this->arNav, $this->arSelect);
+
+        if ($this->bProperties) {
+            while ($obItem = $dbResult->GetNextElement()) {
+                $arFields = $obItem->GetFields();
+                $arFields['PROPERTIES'] = $obItem->GetProperties();
+                $arItems[] = $arFields;
+            }
+        } else {
+            while ($obItem = $dbResult->GetNextElement()) {
+                $arFields = $obItem->GetFields();
+                $arItems[] = $arFields;
+            }
+        }
+
+        return $arItems;
+    }
+
+    /**
+     * @return array
+     */
+    private function getSections()
+    {
+        $arSections = [];
+
+        $dbResult = CIBlockSection::GetList($this->arSort, $this->arFilter, false, $this->arSelect);
+        while ($arSection = $dbResult->Fetch()) {
+            $arSections[] = $arSection;
+        }
+
+        return $arSections;
+    }
+
+    /**
+     * @return array|mixed
+     */
+    public function execute()
+    {
+        if ($this->arFilter === false) {
+            echo 'IblockQuery->filter() required';
+            return [];
+        }
+
+        if ($_GET['clear_cache'] == 'Y') {
+            Bitrix\Main\Data\Cache::clearCache(true);
+        }
+
+        if ($this->bCache) {
+            $arResult = $this->getCache();
+            if ($arResult !== false) {
+                return $arResult;
+            }
+        }
+
+        if ($this->sType == 'items') {
+            $arResult = $this->getItems();
+        }
+
+        if ($this->sType == 'sections') {
+            $arResult = $this->getSections();
+        }
+
+        if ($this->bCache) {
+            $this->obCache->startDataCache();
+            $this->obCache->endDataCache(json_encode($arResult));
+        }
+
+        return $arResult;
+    }
+}

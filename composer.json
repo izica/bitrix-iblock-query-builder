@@ -1,5 +1,5 @@
 {
-    "name": "izica/bitrix-query-builder",
+    "name": "izica/iblock-query",
     "description": "Query Builder for CMS Bitrix",
     "authors": [
         {
@@ -14,9 +14,7 @@
     },
     "autoload": {
         "classmap": [
-            "BitrixQueryBuilder.php",
-            "BitrixQueryBuilderElement.php",
-            "BitrixQueryBuilderSection.php"
+            "IblockQuery.php"
         ]
     }
 }

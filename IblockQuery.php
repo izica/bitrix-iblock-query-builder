@@ -191,6 +191,9 @@ class IblockQuery
             $this->arNav,
             $this->arSort,
             $this->arSelect,
+            $this->sListPageUrl,
+            $this->sDetailPageUrl,
+            $this->sSectionPageUrl,
         ]));
 
         if ($this->obCache->initCache($this->nCacheTtl, $this->sCacheKey, $this->sCacheModule)) {

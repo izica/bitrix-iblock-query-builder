@@ -49,6 +49,18 @@ class IblockQuery
      * @var array
      */
     private $arSelect = ['*'];
+    /**
+     * @var string
+     */
+    private $sListPageUrl = '';
+    /**
+     * @var string
+     */
+    private $sDetailPageUrl = '';
+    /**
+     * @var string
+     */
+    private $sSectionPageUrl = '';
 
     /**
      * IblockQuery constructor.
@@ -139,6 +151,36 @@ class IblockQuery
     }
 
     /**
+     * @param $sListPageUrl
+     * @return $this
+     */
+    public function listPageUrl($sListPageUrl)
+    {
+        $this->sListPageUrl = $sListPageUrl;
+        return $this;
+    }
+
+    /**
+     * @param $sDetailPageUrl
+     * @return $this
+     */
+    public function detailPageUrl($sDetailPageUrl)
+    {
+        $this->sDetailPageUrl = $sDetailPageUrl;
+        return $this;
+    }
+
+    /**
+     * @param $sSectionPageUrl
+     * @return $this
+     */
+    public function sectionPageUrl($sSectionPageUrl)
+    {
+        $this->sSectionPageUrl = $sSectionPageUrl;
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
     private function getCache()
@@ -149,6 +191,9 @@ class IblockQuery
             $this->arNav,
             $this->arSort,
             $this->arSelect,
+            $this->sListPageUrl,
+            $this->sDetailPageUrl,
+            $this->sSectionPageUrl,
         ]));
 
         if ($this->obCache->initCache($this->nCacheTtl, $this->sCacheKey, $this->sCacheModule)) {
@@ -166,6 +211,7 @@ class IblockQuery
         $arItems = [];
 
         $dbResult = CIBlockElement::GetList($this->arSort, $this->arFilter, false, $this->arNav, $this->arSelect);
+        $dbResult->SetUrlTemplates($this->sDetailPageUrl, $this->sSectionPageUrl, $this->sListPageUrl);
 
         if ($this->bProperties) {
             while ($obItem = $dbResult->GetNextElement()) {
@@ -191,7 +237,8 @@ class IblockQuery
         $arSections = [];
 
         $dbResult = CIBlockSection::GetList($this->arSort, $this->arFilter, false, $this->arSelect);
-        while ($arSection = $dbResult->Fetch()) {
+        $dbResult->SetUrlTemplates($this->sDetailPageUrl, $this->sSectionPageUrl, $this->sListPageUrl);
+        while ($arSection = $dbResult->GetNext()) {
             $arSections[] = $arSection;
         }
 

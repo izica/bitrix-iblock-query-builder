@@ -26,6 +26,9 @@ class IblockQuery
      */
     private $obCache = null;
 
+    /**
+     * @var bool
+     */
     private $bProperties = true;
     /**
      * @var string
@@ -61,6 +64,9 @@ class IblockQuery
      * @var string
      */
     private $sSectionPageUrl = '';
+    /**
+     * @var bool
+     */
     private $fnMap = false;
 
     /**
@@ -246,11 +252,17 @@ class IblockQuery
         return $arSections;
     }
 
+    /**
+     * @param bool $fnMap
+     * @return $this
+     */
     public function map($fnMap = false)
     {
         if ($fnMap !== false) {
             $this->fnMap = $fnMap;
         }
+
+        return $this;
     }
 
     /**

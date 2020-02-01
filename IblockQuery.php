@@ -61,6 +61,7 @@ class IblockQuery
      * @var string
      */
     private $sSectionPageUrl = '';
+    private $fnMap = false;
 
     /**
      * IblockQuery constructor.
@@ -245,6 +246,13 @@ class IblockQuery
         return $arSections;
     }
 
+    public function map($fnMap = false)
+    {
+        if ($fnMap !== false) {
+            $this->fnMap = $fnMap;
+        }
+    }
+
     /**
      * @return array|mixed
      */
@@ -272,6 +280,10 @@ class IblockQuery
 
         if ($this->sType == 'sections') {
             $arResult = $this->getSections();
+        }
+
+        if ($this->fnMap !== false) {
+            $arResult = array_map($this->fnMap, $arResult);
         }
 
         if ($this->bCache) {

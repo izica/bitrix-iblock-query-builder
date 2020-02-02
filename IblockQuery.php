@@ -46,7 +46,7 @@ class IblockQuery
      * @var array
      */
     private $arNav = [
-        "nPageSize" => 9999
+        "nPageSize" => 99999
     ];
     /**
      * @var array
@@ -243,7 +243,7 @@ class IblockQuery
     {
         $arSections = [];
 
-        $dbResult = CIBlockSection::GetList($this->arSort, $this->arFilter, false, $this->arSelect);
+        $dbResult = CIBlockSection::GetList($this->arSort, $this->arFilter, false, $this->arSelect, $this->arNav);
         $dbResult->SetUrlTemplates($this->sDetailPageUrl, $this->sSectionPageUrl, $this->sListPageUrl);
         while ($arSection = $dbResult->GetNext()) {
             $arSections[] = $arSection;

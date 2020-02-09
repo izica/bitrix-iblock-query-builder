@@ -6,6 +6,13 @@ composer require izica/iblock-query
 
 ## Использование
 
+### Возможности
+* Получение разделов и элементов инфоблоков
+* Стрелочные вызовы функций в любом порядке
+* Мапинг результатов
+* Автокеширование
+* Автоматическое получение свойств элементов, с возможностью отключить получение свойств
+
 #### Примечание
 Массивы $arSort, $arFilter, $arSelect, $arNav соответсвуют формату [https://dev.1c-bitrix.ru/api_help/iblock/classes/ciblockelement/getlist.php]
 
@@ -17,6 +24,10 @@ $arBadgesSections = IblockQuery::items()
     ->nav($arNav)
     ->properties(false) // выключает запрос на доп. свойства
     ->cache()
+    ->map(function($arItem){
+        $arItem['PREVIEW_PICTURE'] = CFile::GetPath($arItem['PREVIEW_PICTURE']);
+        return $arItem;
+    })
     ->execute();
 
 $arBadgesItems = IblockQuery::sections()
@@ -28,7 +39,25 @@ $arBadgesItems = IblockQuery::sections()
     ->execute();
 ```
 
+#### Мапинг результатов и Автокеширование
+Кеширование сработает уже после функции map(), поэтому запрос на картинки тоже сработает только 1 раз до кеширования.
 
+`cache($module = 'iblock-query', $ttl = 3600)`
+
+```php
+$arBadgesSections = IblockQuery::items()
+    ->filter($arFilter)
+    ->select($arSelect)
+    ->sort($arSort)
+    ->nav($arNav)
+    ->properties(false)
+    ->cache()
+    ->map(function($arItem){
+        $arItem['PREVIEW_PICTURE'] = CFile::GetPath($arItem['PREVIEW_PICTURE']);
+        return $arItem;
+    })
+    ->execute();
+```
 
 #### Получение элементов инфоблока
 ```php

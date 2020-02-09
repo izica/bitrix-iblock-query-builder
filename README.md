@@ -1,7 +1,7 @@
 ## Установка
 Установить через composer(или скачать), подключить в php_interface/init.php
 ```
-composer require izica/iblock-query
+composer require izica/bitrix-iblock-query-builder
 ```
 
 ## Использование

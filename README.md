@@ -7,11 +7,32 @@ composer require izica/bitrix-iblock-query-builder
 ## Использование
 
 ### Возможности
+* Получение информации о навигации
 * Получение разделов и элементов инфоблоков
 * Стрелочные вызовы функций в любом порядке
 * Мапинг результатов
 * Автокеширование
 * Автоматическое получение свойств элементов, с возможностью отключить получение свойств
+
+### Описание классов
+####
+* IblockQuery
+    * items()
+    * sections()
+    * filter($arFilter)
+    * sort($arSort)
+    * nav($arNav)
+    * select($arSelect)
+    * properties($bBoolean)
+    * cache($sCustomKey = 'iblock-query', $ttl = 3600)
+    * map($fnCallable)
+    * execute() => IblockQueryResult
+
+* IblockQueryResult
+    * all() // возвращает массив результата запроса
+    * nav() // данные о пагинации
+    * count()
+     
 
 #### Примечание
 Массивы $arSort, $arFilter, $arSelect, $arNav соответсвуют формату [https://dev.1c-bitrix.ru/api_help/iblock/classes/ciblockelement/getlist.php]
@@ -28,7 +49,7 @@ $arBadgesSections = IblockQuery::items()
         $arItem['PREVIEW_PICTURE'] = CFile::GetPath($arItem['PREVIEW_PICTURE']);
         return $arItem;
     })
-    ->execute();
+    ->execute(); // возвращает экземляр класса IblockQueryResult
 
 $arBadgesItems = IblockQuery::sections()
     ->filter($arFilter)
@@ -36,7 +57,8 @@ $arBadgesItems = IblockQuery::sections()
     ->sort($arSort)
     ->nav($arNav)
     ->cache()
-    ->execute();
+    ->execute()
+    ->all();
 ```
 
 #### Мапинг результатов и Автокеширование

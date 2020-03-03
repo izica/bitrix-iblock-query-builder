@@ -5,10 +5,25 @@
  */
 class IblockQueryResult
 {
+    /**
+     * @var array
+     */
     private $arItems = [];
+    /**
+     * @var array
+     */
     private $arNav = [];
+    /**
+     * @var int
+     */
     private $nCount = 0;
 
+    /**
+     * IblockQueryResult constructor.
+     * @param $arItems
+     * @param $arNav
+     * @param $nCount
+     */
     public function __construct($arItems, $arNav, $nCount)
     {
         $this->arItems = $arItems;
@@ -16,6 +31,11 @@ class IblockQueryResult
         $this->nCount = $nCount;
     }
 
+    /**
+     * @param $dbResult
+     * @param $arItems
+     * @return IblockQueryResult
+     */
     public static function fromDbResult($dbResult, $arItems)
     {
         $arNav = [
@@ -30,21 +50,33 @@ class IblockQueryResult
         return new IblockQueryResult($arItems, $arNav, $nCount);
     }
 
+    /**
+     * @return array
+     */
     public function all()
     {
         return $this->arItems;
     }
 
+    /**
+     * @return array
+     */
     public function nav()
     {
         return $this->arNav;
     }
 
+    /**
+     * @return int
+     */
     public function count()
     {
         return $this->nCount;
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         return [
@@ -54,11 +86,18 @@ class IblockQueryResult
         ];
     }
 
+    /**
+     * @return false|string
+     */
     public function toJson()
     {
         return json_encode($this->toArray());
     }
 
+    /**
+     * @param $sJson
+     * @return IblockQueryResult
+     */
     public static function fromJson($sJson)
     {
         $arData = json_decode($sJson, true);

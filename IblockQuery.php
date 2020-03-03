@@ -1,4 +1,5 @@
 <?
+require_once 'IblockQueryResult.php';
 
 /**
  * Class IblockQuery
@@ -65,9 +66,9 @@ class IblockQuery
      */
     private $sSectionPageUrl = '';
     /**
-     * @var bool
+     * @var callable
      */
-    private $fnMap = false;
+    private $fnMap = null;
 
     /**
      * IblockQuery constructor.
@@ -211,7 +212,7 @@ class IblockQuery
     }
 
     /**
-     * @return array
+     * @return IblockQueryResult
      */
     private function getItems()
     {
@@ -233,32 +234,40 @@ class IblockQuery
             }
         }
 
-        return $arItems;
+        if (is_callable($this->fnMap)) {
+            $arItems = array_map($this->fnMap, $arItems);
+        }
+
+        return IblockQueryResult::fromDbResult($dbResult, $arItems);
     }
 
     /**
-     * @return array
+     * @return IblockQueryResult
      */
     private function getSections()
     {
         $arSections = [];
 
-        $dbResult = CIBlockSection::GetList($this->arSort, $this->arFilter, false, $this->arSelect, $this->arNav);
+        $dbResult = CIBlockSection::GetList($this->arSort, $this->arFilter, false, $this->arSelect);
         $dbResult->SetUrlTemplates($this->sDetailPageUrl, $this->sSectionPageUrl, $this->sListPageUrl);
         while ($arSection = $dbResult->GetNext()) {
             $arSections[] = $arSection;
         }
 
-        return $arSections;
+        if (is_callable($this->fnMap)) {
+            $arSections = array_map($this->fnMap, $arSections);
+        }
+
+        return IblockQueryResult::fromDbResult($dbResult, $arSections);
     }
 
     /**
-     * @param bool $fnMap
+     * @param callable $fnMap
      * @return $this
      */
-    public function map($fnMap = false)
+    public function map($fnMap = null)
     {
-        if ($fnMap !== false) {
+        if (is_callable($fnMap)) {
             $this->fnMap = $fnMap;
         }
 
@@ -270,6 +279,8 @@ class IblockQuery
      */
     public function execute()
     {
+        $arResult = null;
+
         if ($this->arFilter === false) {
             echo 'IblockQuery->filter() required';
             return [];
@@ -282,7 +293,7 @@ class IblockQuery
         if ($this->bCache) {
             $arResult = $this->getCache();
             if ($arResult !== false) {
-                return $arResult;
+                return IblockQueryResult::fromJson($arResult);
             }
         }
 
@@ -294,13 +305,9 @@ class IblockQuery
             $arResult = $this->getSections();
         }
 
-        if ($this->fnMap !== false) {
-            $arResult = array_map($this->fnMap, $arResult);
-        }
-
         if ($this->bCache) {
             $this->obCache->startDataCache();
-            $this->obCache->endDataCache(json_encode($arResult));
+            $this->obCache->endDataCache($arResult->toJson());
         }
 
         return $arResult;

@@ -293,7 +293,7 @@ class IblockQuery
         if ($this->bCache) {
             $arResult = $this->getCache();
             if ($arResult !== false) {
-                return IblockQueryResult::fromJson($arResult);
+                return IblockQueryResult::fromArray($arResult);
             }
         }
 

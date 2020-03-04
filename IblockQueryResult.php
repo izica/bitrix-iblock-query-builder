@@ -95,12 +95,11 @@ class IblockQueryResult
     }
 
     /**
-     * @param $sJson
+     * @param $arData
      * @return IblockQueryResult
      */
-    public static function fromJson($sJson)
+    public static function fromArray($arData)
     {
-        $arData = json_decode($sJson, true);
         return new IblockQueryResult($arData['ITEMS'], $arData['NAV'], $arData['COUNT']);
     }
 }

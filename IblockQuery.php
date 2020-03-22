@@ -275,7 +275,7 @@ class IblockQuery
     }
 
     /**
-     * @return array|mixed
+     * @return IblockQueryResult
      */
     public function execute()
     {

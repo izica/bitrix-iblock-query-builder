@@ -43,7 +43,7 @@ class IblockQueryResult
             'PAGE'           => $dbResult->NavPageNomer,
             'PAGE_SIZE'      => $dbResult->NavPageSize,
             'SELECTED_COUNT' => $dbResult->nSelectedCount,
-            'NEXT_PAGE'      => (int)$dbResult->NavPageCount !== (int)$dbResult->NavPageNomer
+            'NEXT_PAGE'      => (int)$dbResult->NavPageCount !== (int)$dbResult->NavPageNomer,
         ];
         $nCount = count($arItems);
 
@@ -55,6 +55,17 @@ class IblockQueryResult
      */
     public function all()
     {
+        return $this->arItems;
+    }
+
+    /**
+     * @return array | null
+     */
+    public function first()
+    {
+        if (count($this->arItems) === 0) {
+            return null;
+        }
         return $this->arItems;
     }
 

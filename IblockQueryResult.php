@@ -66,7 +66,7 @@ class IblockQueryResult
         if (count($this->arItems) === 0) {
             return null;
         }
-        return $this->arItems;
+        return $this->arItems[0];
     }
 
     /**

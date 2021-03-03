@@ -38,7 +38,7 @@ composer require izica/bitrix-iblock-query-builder
 Массивы $arSort, $arFilter, $arSelect, $arNav соответсвуют формату [https://dev.1c-bitrix.ru/api_help/iblock/classes/ciblockelement/getlist.php]
 
 ```php
-$arBadgesSections = IblockQuery::items()
+$arBadgesItems = IblockQuery::items()
     ->filter($arFilter)
     ->select($arSelect)
     ->sort($arSort)
@@ -51,7 +51,7 @@ $arBadgesSections = IblockQuery::items()
     })
     ->execute(); // возвращает экземляр класса IblockQueryResult
 
-$arBadgesItems = IblockQuery::sections()
+$arBadgesSections = IblockQuery::sections()
     ->filter($arFilter)
     ->select($arSelect)
     ->sort($arSort)

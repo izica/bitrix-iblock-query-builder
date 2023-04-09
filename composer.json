@@ -1,12 +1,6 @@
 {
     "name": "izica/bitrix-iblock-query-builder",
     "description": "Query Builder for CMS Bitrix",
-    "authors": [
-        {
-            "name": "Golovarchuk Artyom",
-            "email": "artemiztomska@gmail.com"
-        }
-    ],
     "keywords": ["bitrix", "php", "query", "orm", "builder", "query-builder", "bitrix-query"],
     "license": "MIT",
     "require": {
